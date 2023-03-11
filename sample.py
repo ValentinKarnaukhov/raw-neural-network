@@ -1,4 +1,5 @@
 import numpy as np
+import pickle
 
 from activation_functions import sigmoid, sigmoid_derivative
 from scaler_factory import min_max_scaler
@@ -27,7 +28,11 @@ network.add_layer(ActivationLayer(sigmoid, sigmoid_derivative))
 network.add_layer(FullyConnectedLayer(3, 1))
 network.add_layer(ActivationLayer(sigmoid, sigmoid_derivative))
 
-network.train(input_data, validation_data, 100000, 0.5)
+network.train(input_data, validation_data, 1000, 0.5)
+
+network.save("xor.d")
+
+network = NeuralNetwork.from_file("xor.d")
 
 for input in input_data:
     print("Input:", input, "Output:", network.predict(input))

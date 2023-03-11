@@ -1,5 +1,6 @@
 import numpy as np
 
+import serialization
 from loss_functions import mean_square_error, mean_square_error_derivative
 
 
@@ -10,6 +11,10 @@ class NeuralNetwork:
         self.scaler = scaler
         self.logging = False
         self.errors = np.empty((0, 1))
+
+    @classmethod
+    def from_file(cls, file_name):
+        return serialization.deserialize(file_name)
 
     def add_layer(self, layer):
         self.layers.append(layer)
@@ -46,3 +51,6 @@ class NeuralNetwork:
             self.errors = np.append(self.errors, error)
             if self.logging:
                 print("Epoch: ", epoch, "Error: ", error)
+
+    def save(self, file_name):
+        serialization.serialize(file_name, self)
