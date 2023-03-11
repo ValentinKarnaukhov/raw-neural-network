@@ -18,11 +18,11 @@ class FullyConnectedLayer(Layer):
     def forward_propagation(self, input_data):
         self.input = input_data.flatten().reshape(1, -1)
         self.output = np.dot(self.input, self.weights) + self.bias
-        return self.output
+        return self.output[0]
 
     def backward_propagation(self, output_gradient, learning_rate):
         input_error = np.dot(output_gradient, self.weights.T)
-        weights_error = np.dot(self.input.T, output_gradient.flatten().reshape(1, -1))
+        weights_error = np.dot(self.input.T, output_gradient)
         self.weights = self.weights - learning_rate * weights_error
         self.bias = self.bias - learning_rate * output_gradient
         return input_error
