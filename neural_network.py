@@ -1,14 +1,13 @@
 import numpy as np
 
 import serialization
-from loss_functions import mean_square_error, mean_square_error_derivative
+from function.loss_functions import mean_square_error, mean_square_error_derivative
 
 
 class NeuralNetwork:
 
-    def __init__(self, scaler):
+    def __init__(self):
         self.layers = []
-        self.scaler = scaler
         self.logging = False
         self.errors = np.empty((0, 1))
 
@@ -19,29 +18,31 @@ class NeuralNetwork:
     def add_layer(self, layer):
         self.layers.append(layer)
 
-    # main run function
     def predict(self, input_data):
-        result = self.scaler.transform(input_data.reshape(len(input_data), -1)).reshape(input_data.shape)
+        result = input_data
         for layer in self.layers:
             result = layer.forward_propagation(result)
-        return self.scaler.inverse_transform(result.reshape(len(result), -1)).reshape(result.shape)
+        return result
+
+    def predict_bulk(self, input_dataset):
+        result = []
+        for input_data in input_dataset:
+            prediction_result = self.predict(input_data)
+            result.append(prediction_result)
+        return np.array(result)
 
     def train(self, input_dataset, validation_dataset, epochs, learning_rate):
+        if self.logging:
+            print("Training has been started")
+
         for epoch in range(epochs):
             dataset_length = len(input_dataset)
-            error = None
+            error = 0
             for data_index in range(dataset_length):
                 input_data = input_dataset[data_index]
-                reshaped_input_data = input_data.reshape(len(input_data), -1)
-                input_data = self.scaler.transform(reshaped_input_data).reshape(input_data.shape)
 
-                actual_result = input_data
-                for layer in self.layers:
-                    actual_result = layer.forward_propagation(actual_result)
-
+                actual_result = self.predict(input_data)
                 validation_data = validation_dataset[data_index]
-                reshaped_validation_data = validation_data.reshape(len(validation_data), -1)
-                validation_data = self.scaler.transform(reshaped_validation_data).reshape(validation_data.shape)
 
                 error = mean_square_error(validation_data, actual_result)
                 output_gradient = mean_square_error_derivative(validation_data, actual_result).reshape(1, -1)
@@ -49,8 +50,9 @@ class NeuralNetwork:
                     output_gradient = layer.backward_propagation(output_gradient, learning_rate)
 
             self.errors = np.append(self.errors, error)
+            avg_error = self.errors.mean()
             if self.logging:
-                print("Epoch: ", epoch, "Error: ", error)
+                print('epoch: %d/%d   error: %f' % (epoch + 1, epochs, avg_error))
 
     def save(self, file_name):
         serialization.serialize(file_name, self)
