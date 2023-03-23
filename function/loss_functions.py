@@ -6,4 +6,4 @@ def mean_square_error(target_result, actual_result):
 
 
 def mean_square_error_derivative(target_result, actual_result):
-    return actual_result - target_result
+    return 2 * (actual_result - target_result) / target_result.size

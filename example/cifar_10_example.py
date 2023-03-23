@@ -36,7 +36,7 @@ network.add_layer(ActivationLayer(Tanh()))
 network.add_layer(FullyConnectedLayer.with_random_weights(512, 10))
 network.add_layer(ActivationLayer(Tanh()))
 
-network.train(x_train[0:1], y_train[0:1], 1, 0.5)
+network.train(x_train[0:10], y_train[0:10], 30, 0.5)
 
 output = network.predict(x_test[0])
 print(output)
