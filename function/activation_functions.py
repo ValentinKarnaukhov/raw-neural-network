@@ -3,32 +3,32 @@ import numpy as np
 
 class ActivationFunction:
 
-    @classmethod
-    def function(cls, x):
+    @staticmethod
+    def function(x):
         raise NotImplementedError
 
-    @classmethod
-    def function_derivative(cls, x):
+    @staticmethod
+    def function_derivative(x):
         raise NotImplementedError
 
 
 class Sigmoid(ActivationFunction):
 
-    @classmethod
-    def function(cls, x):
+    @staticmethod
+    def function(x):
         return 1 / (1 + np.exp(-x))
 
-    @classmethod
-    def function_derivative(cls, x):
-        return cls.function(x) * (1 - cls.function(x))
+    @staticmethod
+    def function_derivative(x):
+        return Sigmoid.function(x) * (1 - Sigmoid.function(x))
 
 
 class Tanh(ActivationFunction):
 
-    @classmethod
-    def function(cls, x):
+    @staticmethod
+    def function(x):
         return np.tanh(x)
 
-    @classmethod
-    def function_derivative(cls, x):
+    @staticmethod
+    def function_derivative(x):
         return 1 - np.tanh(x) ** 2

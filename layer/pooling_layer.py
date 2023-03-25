@@ -6,6 +6,7 @@ from layer.layer import Layer
 class MaxPooling(Layer):
 
     def __init__(self, pooling_size):
+        super().__init__()
         self.pooling_size = pooling_size
 
     # input_data - (m, k, n), n - channels, m x k - size
@@ -13,32 +14,31 @@ class MaxPooling(Layer):
         self.input = input_data
         output_height = self.input.shape[0] // self.pooling_size[0]
         output_width = self.input.shape[1] // self.pooling_size[1]
-        self.output = np.zeros((output_height, output_width, self.input.shape[2]))
-        for input_data_index in range(self.input.shape[2]):
-            for h in range(output_height):
-                for w in range(output_width):
-                    vertical_start = h * self.pooling_size[0]
-                    vertical_end = vertical_start + self.pooling_size[0]
-                    horizontal_start = w * self.pooling_size[1]
-                    horizontal_end = horizontal_start + self.pooling_size[1]
+        self.output = np.zeros((output_height, output_width, self.input.shape[-1]))
+        for channel_index in range(self.input.shape[-1]):
+            for i in range(output_height):
+                for j in range(output_width):
+                    h_start = i * self.pooling_size[0]
+                    h_end = h_start + self.pooling_size[0]
+                    w_start = j * self.pooling_size[1]
+                    w_end = w_start + self.pooling_size[1]
 
-                    input_slice = input_data[vertical_start:vertical_end,
-                                  horizontal_start:horizontal_end, input_data_index]
-                    self.output[h, w, input_data_index] = np.max(input_slice)
+                    input_slice = input_data[h_start:h_end, w_start:w_end, channel_index]
+                    self.output[i, j, channel_index] = np.max(input_slice)
         return self.output
 
-    def backward_propagation(self, output_error, learning_rate):
-        input_error = np.zeros_like(self.input)
-        for output_data_index in range(self.output.shape[2]):
-            for h in range(self.output.shape[0]):
-                for w in range(self.output.shape[1]):
-                    vertical_start = h * self.pooling_size[0]
-                    vertical_end = vertical_start + self.pooling_size[0]
-                    horizontal_start = w * self.pooling_size[1]
-                    horizontal_end = horizontal_start + self.pooling_size[1]
+    def backward_propagation(self, output_gradient, learning_rate):
+        input_gradient = np.zeros_like(self.input)
+        for channel_index in range(self.output.shape[-1]):
+            for i in range(self.output.shape[0]):
+                for j in range(self.output.shape[1]):
+                    h_start = i * self.pooling_size[0]
+                    h_end = h_start + self.pooling_size[0]
+                    w_start = j * self.pooling_size[1]
+                    w_end = w_start + self.pooling_size[1]
 
-                    input_slice = self.input[vertical_start:vertical_end, horizontal_start:horizontal_end,output_data_index]
-                    mask = (input_slice == self.output[h, w, output_data_index])
-                    input_error[vertical_start:vertical_end, horizontal_start:horizontal_end,
-                    output_data_index] += mask * output_error[h, w, output_data_index]
-        return input_error
+                    input_slice = self.input[h_start:h_end, w_start:w_end, channel_index]
+                    mask = (input_slice == self.output[i, j, channel_index])
+                    input_gradient[h_start:h_end, w_start:w_end, channel_index] += \
+                        mask * output_gradient[i, j, channel_index]
+        return input_gradient

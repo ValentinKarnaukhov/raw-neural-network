@@ -9,6 +9,6 @@ class Layer:
     def forward_propagation(self, input_data):
         raise NotImplementedError
 
-    def backward_propagation(self, output_error, learning_rate):
+    def backward_propagation(self, output_gradient, learning_rate):
         raise NotImplementedError
 

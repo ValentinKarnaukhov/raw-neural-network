@@ -1,6 +1,7 @@
 from keras.datasets import cifar10
 from keras.utils import np_utils
 
+import plotter
 from function.activation_functions import Tanh
 from layer.flatten_layer import FlattenLayer
 from layer.activation_layer import ActivationLayer
@@ -17,26 +18,28 @@ y_train = np_utils.to_categorical(y_train)
 x_test = x_test.astype("float32") / 255
 y_test = np_utils.to_categorical(y_test)
 
-network = NeuralNetwork()
-network.logging = True
+plotter.plot_images(x_train[0:11])
 
-network.add_layer(ConvolutionalLayer((32, 3, 3), (32, 32, 3)))
-network.add_layer(ActivationLayer(Tanh()))
-network.add_layer(ConvolutionalLayer((32, 3, 3), (32, 32, 32)))
-network.add_layer(ActivationLayer(Tanh()))
-network.add_layer(MaxPooling((2, 2)))
-network.add_layer(ConvolutionalLayer((64, 3, 3), (16, 16, 32)))
-network.add_layer(ActivationLayer(Tanh()))
-network.add_layer(ConvolutionalLayer((64, 3, 3), (16, 16, 64)))
-network.add_layer(ActivationLayer(Tanh()))
-network.add_layer(MaxPooling((2, 2)))
-network.add_layer(FlattenLayer())
-network.add_layer(FullyConnectedLayer.with_random_weights(4096, 512))
-network.add_layer(ActivationLayer(Tanh()))
-network.add_layer(FullyConnectedLayer.with_random_weights(512, 10))
-network.add_layer(ActivationLayer(Tanh()))
+# network = NeuralNetwork()
+# network.logging = True
+#
+# network.add_layer(ConvolutionalLayer((32, 3, 3), (32, 32, 3)))
+# network.add_layer(ActivationLayer(Tanh()))
+# network.add_layer(ConvolutionalLayer((32, 3, 3), (32, 32, 32)))
+# network.add_layer(ActivationLayer(Tanh()))
+# network.add_layer(MaxPooling((2, 2)))
+# network.add_layer(ConvolutionalLayer((64, 3, 3), (16, 16, 32)))
+# network.add_layer(ActivationLayer(Tanh()))
+# network.add_layer(ConvolutionalLayer((64, 3, 3), (16, 16, 64)))
+# network.add_layer(ActivationLayer(Tanh()))
+# network.add_layer(MaxPooling((2, 2)))
+# network.add_layer(FlattenLayer())
+# network.add_layer(FullyConnectedLayer.with_random_weights(4096, 512))
+# network.add_layer(ActivationLayer(Tanh()))
+# network.add_layer(FullyConnectedLayer.with_random_weights(512, 10))
+# network.add_layer(ActivationLayer(Tanh()))
 
-network.train(x_train[0:10], y_train[0:10], 30, 0.5)
-
-output = network.predict(x_test[0])
-print(output)
+# network.train(x_train[0:10], y_train[0:10], 30, 0.5)
+#
+# output = network.predict(x_test[0])
+# print(output)

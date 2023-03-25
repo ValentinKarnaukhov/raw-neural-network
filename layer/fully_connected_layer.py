@@ -6,13 +6,12 @@ from layer.layer import Layer
 class FullyConnectedLayer(Layer):
 
     def __init__(self, weights, bias):
+        super().__init__()
         self.weights = weights
         self.bias = bias
 
     @classmethod
     def with_initial_weights(cls, weights, bias):
-        weights = weights
-        bias = bias
         return cls(weights, bias)
 
     @classmethod
@@ -28,8 +27,8 @@ class FullyConnectedLayer(Layer):
         return self.output[0]
 
     def backward_propagation(self, output_gradient, learning_rate):
-        input_error = np.dot(output_gradient, self.weights.T)
+        input_gradient = np.dot(output_gradient, self.weights.T)
         weights_error = np.dot(self.input.T, output_gradient)
         self.weights -= learning_rate * weights_error
         self.bias -= learning_rate * output_gradient
-        return input_error
+        return input_gradient

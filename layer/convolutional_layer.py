@@ -7,19 +7,21 @@ from util.execution_time import execution_time
 
 class ConvolutionalLayer(Layer):
 
-    # kernel_shape - dimensions (n, m, k), n - amount of filters, m x k - size of filter
+    # kernel_shape - dimensions (m, k), m x k - size of filter
     # input_shape - dimensions (p, q, l), l - amount of input channels, p x q - size
     # weights - dimensions (n, m, k, l), n - amount of filters, m x k - size of filter, l - kernels per filter
-    def __init__(self, kernel_shape, input_shape):
+    def __init__(self, kernel_shape, amount_of_filters, input_shape):
+        super().__init__()
         self.kernel_shape = kernel_shape
         self.input_shape = input_shape
-        self.left_right_padding = self.kernel_shape[1] // 2
-        self.up_bottom_padding = self.kernel_shape[2] // 2
-        self.output_shape = (self.input_shape[0] + 2 * self.left_right_padding - self.kernel_shape[1] + 1,
-                             self.input_shape[1] + 2 * self.up_bottom_padding - self.kernel_shape[2] + 1,
-                             self.kernel_shape[0])
-        self.weights = np.random.rand(kernel_shape[0], kernel_shape[1], kernel_shape[2], self.input_shape[2]) - 1
-        self.bias = np.random.rand(kernel_shape[0]) - 1
+        self.amount_of_filters = amount_of_filters
+        self.left_right_padding = self.kernel_shape[0] // 2
+        self.up_bottom_padding = self.kernel_shape[1] // 2
+        self.output_shape = (self.input_shape[0] + 2 * self.left_right_padding - self.kernel_shape[0] + 1,
+                             self.input_shape[1] + 2 * self.up_bottom_padding - self.kernel_shape[1] + 1,
+                             amount_of_filters)
+        self.weights = np.random.rand(amount_of_filters, kernel_shape[0], kernel_shape[1], self.input_shape[-1]) - 0.5
+        self.bias = np.random.rand(amount_of_filters) - 0.5
 
     @execution_time
     def forward_propagation(self, input_data):
@@ -28,28 +30,33 @@ class ConvolutionalLayer(Layer):
         padded_input = np.pad(input_data, [(self.up_bottom_padding, self.up_bottom_padding),
                                            (self.left_right_padding, self.left_right_padding), (0, 0)])
 
-        for kernel_index in range(self.kernel_shape[0]):
-            for channel in range(self.input_shape[-1]):
-                self.output[:, :, kernel_index] += signal.correlate2d(padded_input[:, :, channel],
-                                                                      self.weights[kernel_index, :, :, channel],
-                                                                      'valid') + self.bias[kernel_index]
+        for filter_index in range(self.amount_of_filters):
+            for channel_index in range(self.input_shape[-1]):
+                self.output[:, :, filter_index] += signal.correlate2d(padded_input[:, :, channel_index],
+                                                                      self.weights[filter_index, :, :, channel_index],
+                                                                      'valid') + self.bias[filter_index]
         return self.output
 
     @execution_time
-    def backward_propagation(self, output_error, learning_rate):
-        input_error = np.zeros(self.input_shape)
+    def backward_propagation(self, output_gradient, learning_rate):
+        input_gradient = np.zeros(self.input_shape)
         weights_gradients = np.zeros(
-            (self.kernel_shape[0], self.kernel_shape[1], self.kernel_shape[1], self.input_shape[-1]))
-        bias_gradient = np.zeros(self.kernel_shape[0])
+            (self.amount_of_filters, self.kernel_shape[0], self.kernel_shape[1], self.input_shape[-1]))
+        bias_gradient = np.zeros(self.amount_of_filters)
 
-        for k in range(self.kernel_shape[0]):
-            for d in range(self.input_shape[-1]):
-                input_error[:, :, d] += signal.convolve2d(output_error[:, :, k], self.weights[k, :, :, d], 'full')[
-                                     self.left_right_padding:-self.left_right_padding,
-                                     self.up_bottom_padding:-self.up_bottom_padding]
-                weights_gradients[k, :, :, d] = signal.correlate2d(self.input[:, :, d], output_error[:, :, k], 'valid')
-            bias_gradient[k] = self.kernel_shape[0] * np.sum(output_error[:, :, k])
+        for filter_index in range(self.amount_of_filters):
+            for channel_index in range(self.input_shape[-1]):
+                padded_input_gradient = signal.convolve2d(output_gradient[:, :, filter_index],
+                                                          self.weights[filter_index, :, :, channel_index],
+                                                          'full')
+                input_gradient[:, :, channel_index] += padded_input_gradient[
+                                                       self.left_right_padding:-self.left_right_padding,
+                                                       self.up_bottom_padding:-self.up_bottom_padding]
+                weights_gradients[filter_index, :, :, channel_index] = signal.correlate2d(
+                    self.input[:, :, channel_index], output_gradient[:, :, filter_index],
+                    'valid')
+            bias_gradient[filter_index] = self.amount_of_filters * np.sum(output_gradient[:, :, filter_index])
 
         self.weights -= learning_rate * weights_gradients
         self.bias -= learning_rate * bias_gradient
-        return input_error
+        return input_gradient

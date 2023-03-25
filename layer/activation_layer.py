@@ -5,6 +5,7 @@ class ActivationLayer(Layer):
 
     # activation - activate function
     def __init__(self, activation_function):
+        super().__init__()
         self.activation_function = activation_function
 
     # apply activation function to input_data

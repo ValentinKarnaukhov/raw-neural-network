@@ -1,15 +1,16 @@
 import numpy as np
 
+import plotter
 import serialization
-from function.loss_functions import mean_square_error, mean_square_error_derivative
 
 
 class NeuralNetwork:
 
-    def __init__(self):
+    def __init__(self, loss_function):
         self.layers = []
         self.logging = False
         self.errors = np.empty((0, 1))
+        self.loss_function = loss_function
 
     @classmethod
     def from_file(cls, file_name):
@@ -38,21 +39,23 @@ class NeuralNetwork:
         for epoch in range(epochs):
             dataset_length = len(input_dataset)
             error = 0
-            for data_index in range(dataset_length):
-                input_data = input_dataset[data_index]
+            for i in range(dataset_length):
+                actual_result = self.predict(input_dataset[i])
+                target_result = validation_dataset[i]
 
-                actual_result = self.predict(input_data)
-                validation_data = validation_dataset[data_index]
+                error += self.loss_function.function(target_result, actual_result)
+                output_gradient = self.loss_function.function_derivative(target_result, actual_result).reshape(1, -1)
 
-                error = mean_square_error(validation_data, actual_result)
-                output_gradient = mean_square_error_derivative(validation_data, actual_result).reshape(1, -1)
                 for layer in reversed(self.layers):
                     output_gradient = layer.backward_propagation(output_gradient, learning_rate)
 
+            error /= dataset_length
             self.errors = np.append(self.errors, error)
-            avg_error = self.errors.mean()
             if self.logging:
-                print('epoch: %d/%d   error: %f' % (epoch + 1, epochs, avg_error))
+                print('epoch: %d/%d   error: %f' % (epoch + 1, epochs, error))
 
     def save(self, file_name):
         serialization.serialize(file_name, self)
+
+    def plot_error(self):
+        plotter.plot_error(self.errors)
