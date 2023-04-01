@@ -16,8 +16,8 @@ class FullyConnectedLayer(Layer):
 
     @classmethod
     def with_random_weights(cls, input_size, output_size):
-        weights = np.random.rand(input_size, output_size) - 0.5
-        bias = np.random.rand(1, output_size) - 0.5
+        weights = np.random.rand(input_size, output_size) / 10
+        bias = np.random.rand(1, output_size) / 10
         return cls(weights, bias)
 
     # apply scalar product

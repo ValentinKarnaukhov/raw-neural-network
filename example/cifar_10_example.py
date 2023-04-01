@@ -22,21 +22,20 @@ y_test = np_utils.to_categorical(y_test)
 network = NeuralNetwork(MeanSquareError)
 network.logging = True
 
-network.add_layer(ConvolutionalLayer((3, 3), 32, (32, 32, 3)))
-network.add_layer(ActivationLayer(Sigmoid))
-network.add_layer(MaxPooling((2, 2)))
-network.add_layer(ConvolutionalLayer((3, 3), 64, (16, 16, 32)))
+network.add_layer(ConvolutionalLayer((3, 3), 16, (32, 32, 3)))
+network.add_layer(ActivationLayer(ReLU))
+network.add_layer(ConvolutionalLayer((3, 3), 16, (32, 32, 16)))
 network.add_layer(ActivationLayer(ReLU))
 network.add_layer(MaxPooling((2, 2)))
 network.add_layer(FlattenLayer())
-network.add_layer(FullyConnectedLayer.with_random_weights(8 * 8 * 64, 512))
+network.add_layer(FullyConnectedLayer.with_random_weights(16 * 16 * 16, 512))
 network.add_layer(ActivationLayer(ReLU))
 network.add_layer(FullyConnectedLayer.with_random_weights(512, 128))
-network.add_layer(ActivationLayer(Sigmoid))
+network.add_layer(ActivationLayer(ReLU))
 network.add_layer(FullyConnectedLayer.with_random_weights(128, 10))
-network.add_layer(ActivationLayer(Sigmoid))
+network.add_layer(ActivationLayer(ReLU))
 
-network.train(x_train[0:10], y_train[0:10], 50, 0.1)
+network.train(x_train[0:10], y_train[0:10], 50, 0.5)
 
 for i in range(10):
     print("prediction:", network.predict(x_test[i]).round())
@@ -53,4 +52,4 @@ values_dictionary = {0: "airplane",
                      7: "horse",
                      8: "ship",
                      9: "truck"}
-plotter.plot_predictions(x_train[0:10], network.predict_bulk(x_train[0:10]), values_dictionary)
+plotter.plot_predictions(x_test[0:10], network.predict_bulk(x_test[0:10]), values_dictionary)

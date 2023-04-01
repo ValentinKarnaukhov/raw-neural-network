@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 
 import plotter
@@ -38,21 +40,37 @@ class NeuralNetwork:
 
         for epoch in range(epochs):
             dataset_length = len(input_dataset)
-            error = 0
+            total_error = 0
+            forward_time = 0
+            backward_time = 0
             for i in range(dataset_length):
+
+                start_time = time.perf_counter()
                 actual_result = self.predict(input_dataset[i])
+                end_time = time.perf_counter()
+                forward_time += (end_time - start_time)
+
                 target_result = validation_dataset[i]
 
-                error += self.loss_function.function(target_result, actual_result)
+                error = self.loss_function.function(target_result, actual_result)
+                total_error += error
                 output_gradient = self.loss_function.function_derivative(target_result, actual_result).reshape(1, -1)
+                if error < 0.05:
+                    continue
 
+                start_time = time.perf_counter()
                 for layer in reversed(self.layers):
                     output_gradient = layer.backward_propagation(output_gradient, learning_rate)
+                end_time = time.perf_counter()
+                backward_time += (end_time - start_time)
 
-            error /= dataset_length
-            self.errors = np.append(self.errors, error)
+            total_error /= dataset_length
+            forward_time /= dataset_length
+            backward_time /= dataset_length
+            self.errors = np.append(self.errors, total_error)
             if self.logging:
-                print('epoch: %d/%d   error: %f' % (epoch + 1, epochs, error))
+                print('epoch: %d/%d   error: %f   forward: %fs   backward: %fs'
+                      % (epoch + 1, epochs, total_error, forward_time, backward_time))
 
     def save(self, file_name):
         serialization.serialize(file_name, self)

@@ -20,8 +20,8 @@ class ConvolutionalLayer(Layer):
         self.output_shape = (self.input_shape[0] + 2 * self.left_right_padding - self.kernel_shape[0] + 1,
                              self.input_shape[1] + 2 * self.up_bottom_padding - self.kernel_shape[1] + 1,
                              amount_of_filters)
-        self.weights = np.random.rand(amount_of_filters, kernel_shape[0], kernel_shape[1], self.input_shape[-1]) - 0.5
-        self.bias = np.random.rand(amount_of_filters) - 0.5
+        self.weights = np.random.rand(amount_of_filters, kernel_shape[0], kernel_shape[1], self.input_shape[-1]) / 10
+        self.bias = np.random.rand(amount_of_filters) / 10
 
     @execution_time
     def forward_propagation(self, input_data):
@@ -55,7 +55,7 @@ class ConvolutionalLayer(Layer):
                 weights_gradients[filter_index, :, :, channel_index] = signal.correlate2d(
                     self.input[:, :, channel_index], output_gradient[:, :, filter_index],
                     'valid')
-            bias_gradient[filter_index] = self.amount_of_filters * np.sum(output_gradient[:, :, filter_index])
+            bias_gradient[filter_index] = np.sum(output_gradient[:, :, filter_index])
 
         self.weights -= learning_rate * weights_gradients
         self.bias -= learning_rate * bias_gradient
