@@ -1,6 +1,6 @@
 import numpy as np
 
-from layer.layer import Layer
+from rawnn.layer.layer import Layer
 
 
 class MaxPooling(Layer):

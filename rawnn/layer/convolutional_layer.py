@@ -1,8 +1,8 @@
 import numpy as np
 from scipy import signal
 
-from layer.layer import Layer
-from util.execution_time import execution_time
+from rawnn.layer.layer import Layer
+from rawnn.util.execution_time import execution_time
 
 
 class ConvolutionalLayer(Layer):

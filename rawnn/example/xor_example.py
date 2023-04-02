@@ -1,10 +1,10 @@
 import numpy as np
 
-from function.activation_functions import Sigmoid
-from function.loss_functions import MeanSquareError
-from layer.activation_layer import ActivationLayer
-from layer.fully_connected_layer import FullyConnectedLayer
-from neural_network import NeuralNetwork
+from rawnn.function.activation_functions import Sigmoid
+from rawnn.function.loss_functions import MeanSquareError
+from rawnn.layer.activation_layer import ActivationLayer
+from rawnn.layer.fully_connected_layer import FullyConnectedLayer
+from rawnn.neural_network import NeuralNetwork
 
 input_dataset = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
 validation_dataset = np.array([[0], [1], [1], [0]])

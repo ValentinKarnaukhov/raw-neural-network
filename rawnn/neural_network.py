@@ -34,7 +34,7 @@ class NeuralNetwork:
             result.append(prediction_result)
         return np.array(result)
 
-    def train(self, input_dataset, validation_dataset, epochs, learning_rate):
+    def train(self, input_dataset, validation_dataset, epochs, learning_rate, delta=0.0):
         if self.logging:
             print("Training has been started")
 
@@ -55,7 +55,7 @@ class NeuralNetwork:
                 error = self.loss_function.function(target_result, actual_result)
                 total_error += error
                 output_gradient = self.loss_function.function_derivative(target_result, actual_result).reshape(1, -1)
-                if error < 0.05:
+                if error < delta:
                     continue
 
                 start_time = time.perf_counter()

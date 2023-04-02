@@ -1,5 +1,5 @@
 import numpy as np
-from layer.convolutional_layer import ConvolutionalLayer
+from rawnn.layer.convolutional_layer import ConvolutionalLayer
 
 layer1 = ConvolutionalLayer((1, 2, 2), (3, 3, 2))
 layer1.weights = np.array([[[[1, 10], [2, 20]], [[4, 40], [5, 50]]]])

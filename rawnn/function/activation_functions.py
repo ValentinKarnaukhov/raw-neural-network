@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.special import softmax
 
 
 class ActivationFunction:
@@ -46,3 +47,13 @@ class ReLU(ActivationFunction):
         data[data <= 0] = 0
         data[data > 0] = 1
         return data.reshape(x.shape)
+
+class SoftMax(ActivationFunction):
+
+    @staticmethod
+    def function(x):
+        return softmax(x)
+
+    @staticmethod
+    def function_derivative(x):
+        return

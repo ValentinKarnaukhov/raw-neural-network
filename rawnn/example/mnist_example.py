@@ -1,12 +1,12 @@
 from keras.datasets import mnist
 from keras.utils import np_utils
 
-import plotter
-from function.activation_functions import Sigmoid
-from function.loss_functions import MeanSquareError
-from layer.activation_layer import ActivationLayer
-from layer.fully_connected_layer import FullyConnectedLayer
-from neural_network import NeuralNetwork
+from rawnn import plotter
+from rawnn.function.activation_functions import Sigmoid
+from rawnn.function.loss_functions import MeanSquareError
+from rawnn.layer.activation_layer import ActivationLayer
+from rawnn.layer.fully_connected_layer import FullyConnectedLayer
+from rawnn.neural_network import NeuralNetwork
 
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 

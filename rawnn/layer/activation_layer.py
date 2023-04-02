@@ -1,4 +1,4 @@
-from layer.layer import Layer
+from rawnn.layer.layer import Layer
 
 
 class ActivationLayer(Layer):

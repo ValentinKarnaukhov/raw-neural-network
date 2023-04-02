@@ -1,15 +1,15 @@
 from keras.datasets import mnist
 from keras.utils import np_utils
 
-import plotter
-from function.activation_functions import Tanh, Sigmoid
-from function.loss_functions import MeanSquareError
-from layer.flatten_layer import FlattenLayer
-from layer.activation_layer import ActivationLayer
-from layer.convolutional_layer import ConvolutionalLayer
-from layer.fully_connected_layer import FullyConnectedLayer
-from layer.pooling_layer import MaxPooling
-from neural_network import NeuralNetwork
+from rawnn import plotter
+from rawnn.function.activation_functions import Tanh, Sigmoid
+from rawnn.function.loss_functions import MeanSquareError
+from rawnn.layer.flatten_layer import FlattenLayer
+from rawnn.layer.activation_layer import ActivationLayer
+from rawnn.layer.convolutional_layer import ConvolutionalLayer
+from rawnn.layer.fully_connected_layer import FullyConnectedLayer
+from rawnn.layer.pooling_layer import MaxPooling
+from rawnn.neural_network import NeuralNetwork
 
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
